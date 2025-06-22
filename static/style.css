@@ -1,0 +1,847 @@
+/* =================================================================
+   GLOBAL & RESET
+================================================================= */
+:root {
+    --primary-color: #0d47a1; /* Dark Blue */
+    --secondary-color: #1976d2; /* Lighter Blue */
+    --accent-color: #42a5f5; /* Lightest Blue */
+    --background-color: #f4f7fc;
+    --sidebar-bg: #1a237e; /* Indigo */
+    --text-color: #333;
+    --text-light: #f1f1f1;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --border-radius: 8px;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =================================================================
+   LOGIN PAGE
+================================================================= */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+.login-box {
+    background: var(--card-bg);
+    padding: 2.5rem 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 0.9rem;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-box button:hover {
+    background-color: var(--secondary-color);
+}
+
+.error-message {
+    color: var(--error-color);
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    min-height: 1.2em;
+}
+
+
+/* =================================================================
+   MAIN APPLICATION LAYOUT
+================================================================= */
+#app-container {
+    display: flex;
+}
+
+#sidebar {
+    width: 250px;
+    background: var(--sidebar-bg);
+    color: var(--text-light);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    z-index: 100;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding-top: 1rem;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: background 0.3s ease, padding-left 0.3s;
+}
+
+.sidebar-menu li a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    padding-left: 2rem;
+}
+
+.sidebar-menu li a.active {
+    background: var(--primary-color);
+    border-left: 4px solid var(--accent-color);
+}
+
+.sidebar-menu li a i {
+    width: 20px;
+    text-align: center;
+}
+
+#main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--card-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: var(--text-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+#logout-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.content-wrapper {
+    padding: 2rem;
+}
+
+
+/* =================================================================
+   GENERAL COMPONENTS (Buttons, Cards, Tables, etc.)
+================================================================= */
+.card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.filter-bar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    flex-wrap: wrap;
+}
+
+.filter-bar label {
+    margin-right: 0.5rem;
+    font-weight: 500;
+}
+
+.filter-bar input[type="date"],
+.filter-bar select {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    height: 38px;
+    box-sizing: border-box;
+}
+
+.filter-bar button, .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 38px;
+    box-sizing: border-box;
+    min-width: 90px;
+}
+
+.btn-primary { background: var(--primary-color); color: white; }
+.btn-primary:hover { background: var(--secondary-color); }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-secondary:hover { background-color: #5a6268; }
+.btn-success { background-color: var(--success-color); color: white; }
+.btn-success:hover { background-color: #218838; }
+.btn-danger { background-color: var(--error-color); color: white; }
+.btn-danger:hover { background-color: #c82333; }
+.btn-info { background-color: var(--info-color); color: white; }
+.btn-info:hover { background-color: #138496; }
+.btn-lg { padding: 0.8rem 1.5rem !important; font-size: 1rem !important; height: auto !important; }
+
+.table-container {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+thead { background: #f9fafb; }
+th { font-weight: 600; }
+
+
+/* =================================================================
+   PAGE-SPECIFIC STYLES
+================================================================= */
+/* --- Dashboard --- */
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.stat-cards .card h4 { color: #555; margin-bottom: 0.5rem; }
+.stat-cards .card p { font-size: 2rem; font-weight: 600; color: var(--primary-color); }
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.chart-container { background: var(--card-bg); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); height: 400px; }
+
+/* --- Monitoring & CCTV (Original Two-Box Layout) --- */
+
+/* GANTI SELURUH BLOK CSS LAMA ANDA (DARI .monitoring-header SAMPAI .loader) DENGAN INI */
+
+/* --- Monitoring & CCTV --- */
+.monitoring-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.monitoring-header h3, #monitoring-section h3 { margin: 0; }
+
+.cctv-feeds {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.cctv-box {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    width: 48%;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cctv-box h4 {
+    background-color: var(--sidebar-bg);
+    color: white;
+    padding: 15px;
+    margin: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-size: 1.1em;
+}
+
+.cctv-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.result-image-container {
+    width: 100%;
+    min-height: 250px;
+    border: 2px dashed #ced4da;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.result-image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.cctv-placeholder {
+    color: #6c757d;
+    text-align: center;
+}
+
+.cctv-placeholder i {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.cctv-upload-button {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    width: 90%;
+    margin-top: auto;
+}
+
+.cctv-upload-button:hover {
+    background-color: var(--primary-color);
+}
+
+.cctv-upload-button i {
+    margin-right: 8px;
+}
+
+/* =================================================================
+   ATURAN CSS BARU UNTUK MEMPERBAIKI TAMPILAN TEKS HASIL
+   ================================================================= */
+.result-text {
+    width: 90%;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    word-wrap: break-word;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    text-align: left; /* Mengubah perataan menjadi kiri */
+}
+
+.result-text h5 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent-color);
+    display: flex;
+    align-items: center;
+}
+
+.result-text h5 i {
+    margin-right: 10px;
+}
+
+.result-text p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4px;
+    margin: 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.result-text p:last-of-type {
+    border-bottom: none;
+}
+
+.result-text p strong {
+    color: #495057;
+    margin-right: 15px;
+}
+
+.result-text p span {
+    text-align: right;
+    font-weight: 500;
+}
+
+.result-text p .status-success,
+.result-text p .status-error,
+.result-text p .status-info {
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: white;
+}
+
+.result-text p .status-success { background-color: var(--success-color); }
+.result-text p .status-error { background-color: var(--error-color); }
+.result-text p .status-info { background-color: var(--info-color); }
+
+/* Aturan untuk pesan status yang berdiri sendiri (seperti di paling bawah) */
+.result-text p.status-success,
+.result-text p.status-error {
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    color: white;
+}
+.result-text p.status-success { background-color: var(--success-color); }
+.result-text p.status-error { background-color: var(--error-color); }
+
+.loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid var(--secondary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+#kapasitas-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.capacity-card h4 { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; color: #555; }
+.capacity-card p { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); margin-bottom: 1rem; }
+.progress-bar-container { width: 100%; background-color: #e9ecef; border-radius: 4px; height: 24px; }
+.progress-bar { height: 100%; background-color: var(--success-color); border-radius: 4px; transition: width 0.5s ease-in-out, background-color 0.5s ease; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; font-weight: 500; }
+.progress-bar.full-capacity { background-color: var(--warning-color); }
+.progress-bar.over-capacity { background-color: var(--error-color); }
+
+/* --- Pengaturan Sistem (LENGKAP DAN DIPERBAIKI) --- */
+.page-header { 
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+.page-header h2 {
+    margin-bottom: 0.25rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+}
+.page-header h2 i {
+    margin-right: 0.75rem;
+}
+.page-header p {
+    font-size: 0.95rem;
+    color: #666;
+}
+.settings-layout { 
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+@media (min-width: 992px) {
+    .settings-layout {
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    }
+}
+.settings-group {
+    background: var(--card-bg);
+    padding: 1.5rem 2rem; 
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+.settings-group h3 {
+    font-size: 1.2rem; 
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.75rem;
+    display: flex; 
+    align-items: center;
+}
+.settings-group h3 i {
+    margin-right: 0.75rem; 
+    font-size: 1.1rem; 
+}
+.setting-item {
+    display: grid; 
+    grid-template-columns: 200px 1fr;
+    gap: 1rem; 
+    align-items: center; 
+    margin-bottom: 1.25rem; 
+}
+.setting-item label {
+    font-weight: 500;
+    color: #333; 
+    margin-bottom: 0; 
+    text-align: left; 
+    padding-right: 1rem;
+}
+.setting-item input[type="text"],
+.setting-item input[type="email"],
+.setting-item input[type="tel"],
+.setting-item input[type="number"],
+.setting-item textarea,
+.setting-item select { 
+    width: 100%;
+    padding: 0.6rem 0.75rem; 
+    border: 1px solid #ccc; 
+    border-radius: 4px;
+    font-size: 0.95rem; 
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box; 
+}
+.setting-item input[type="number"] {
+    max-width: 150px;
+}
+.setting-item textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+.settings-actions {
+    margin-top: 2rem; 
+    text-align: right;
+}
+
+/* --- User Management --- */
+#user-table .actions-cell {
+    width: 120px;
+    text-align: center;
+}
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.btn-action {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease-in-out;
+}
+.btn-action.btn-edit-user { color: var(--info-color); }
+.btn-action.btn-edit-user:hover { background-color: #e0f7fa; }
+.btn-action.btn-delete-user { color: var(--error-color); }
+.btn-action.btn-delete-user:hover { background-color: #fdecea; }
+
+
+/* =================================================================
+   MODAL
+================================================================= */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #888;
+}
+#modal-title { margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: .5rem; }
+.form-group input, .form-group select { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: 4px; }
+
+
+/* =================================================================
+   NOTIFICATIONS
+================================================================= */
+#notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    padding: 15px 20px;
+    border-radius: var(--border-radius);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 300px;
+    animation: fadeInRight 0.5s ease-in-out forwards;
+}
+
+.notification.fade-out {
+    animation: fadeOutRight 0.5s ease-in-out forwards;
+}
+
+.notification.success { background-color: var(--success-color); }
+.notification.error { background-color: var(--error-color); }
+
+/* =================================================================
+   STYLING BARU UNTUK HALAMAN MANAJEMEN AKSES
+   (Tambahkan ini di akhir file style.css Anda)
+================================================================= */
+
+.form-card-akses {
+    margin-bottom: 2rem;
+    padding-bottom: 5px; /* Sedikit padding bawah */
+}
+
+.form-card-akses h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+.form-card-akses .form-row {
+    display: flex;
+    align-items: flex-end; /* Membuat tombol sejajar dengan bagian bawah input */
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.form-card-akses .form-group {
+    flex: 1;
+    min-width: 200px; /* Lebar minimal untuk setiap grup form */
+}
+
+.form-card-akses .form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-card-akses .form-group input,
+.form-card-akses .form-group select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    height: 38px;
+}
+
+.form-card-akses .form-group button {
+    width: 100%;
+}
+
+
+.akses-tables-container {
+    display: grid;
+    grid-template-columns: 1fr; /* Default satu kolom untuk mobile */
+    gap: 2rem;
+}
+
+/* Dua kolom untuk layar yang lebih besar */
+@media (min-width: 992px) {
+    .akses-tables-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.table-wrapper h3 {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Menyesuaikan tombol aksi agar mirip dengan User Management */
+#whitelist-table .actions-cell,
+#blacklist-table .actions-cell {
+    width: 100px;
+    text-align: center;
+}
+
+.btn-delete-akses {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease-in-out;
+    color: var(--error-color);
+}
+
+.btn-delete-akses:hover {
+    background-color: #fdecea;
+}
+
+/* =================================================================
+   ANIMATIONS
+================================================================= */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+}
+
+
+/* =================================================================
+   RESPONSIVE DESIGN
+================================================================= */
+@media (max-width: 1200px) {
+    .charts-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 992px) {
+    #sidebar { width: 70px; }
+    #sidebar .sidebar-header h3,
+    #sidebar .sidebar-menu span { display: none; }
+    #main-content { width: calc(100% - 70px); margin-left: 70px; }
+    .settings-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    #sidebar { margin-left: -250px; }
+    #main-content { margin-left: 0; width: 100%; }
+    header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-bar input[type="date"], .filter-bar select, .filter-bar button { width: 100%; }
+    .charts-grid, .stat-cards { grid-template-columns: 1fr; }
+    .setting-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .setting-item label { margin-bottom: 0.25rem; }
+    .settings-actions { text-align: center; }
+    .settings-actions button { width: 100%; }
+    .cctv-feeds { flex-direction: column; align-items: center; }
+    .cctv-box { width: 100%; max-width: 500px; }
+}

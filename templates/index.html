@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Parking Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}" />
+  </head>
+  <body>
+    <div id="notification-container"></div>
+
+    <div id="login-page" class="login-container">
+      <div class="login-box">
+        <h2><i class="fas fa-parking"></i> Smart Parking System</h2>
+        <form id="login-form">
+          <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required />
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <button type="submit">Login</button>
+          <p id="login-error" class="error-message"></p>
+        </form>
+      </div>
+    </div>
+
+    <div id="app-container" class="hidden">
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <h3><i class="fas fa-parking"></i> S-Parking</h3>
+        </div>
+        <ul class="sidebar-menu">
+          <li id="nav-dashboard">
+            <a href="#" class="nav-link active" data-page="dashboard"
+              ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a
+            >
+          </li>
+          <li id="nav-monitoring">
+            <a href="#" class="nav-link" data-page="monitoring"
+              ><i class="fas fa-video"></i> <span>Monitoring</span></a
+            >
+          </li>
+          <li id="nav-laporan">
+            <a href="#" class="nav-link" data-page="laporan"
+              ><i class="fas fa-file-alt"></i> <span>Laporan</span></a
+            >
+          </li>
+          <li id="nav-manajemen-akses">
+            <a href="#" class="nav-link" data-page="manajemen-akses">
+              <i class="fas fa-shield-alt"></i> <span>Manajemen Akses</span>
+            </a>
+          </li>
+          <li id="nav-pengaturan-sistem" class="hidden">
+            <a href="#" class="nav-link" data-page="pengaturan-sistem"
+              ><i class="fas fa-cogs"></i> <span>Pengaturan Sistem</span></a
+            >
+          </li>
+          <li id="nav-user-management" class="hidden">
+            <a href="#" class="nav-link" data-page="user-management"
+              ><i class="fas fa-users-cog"></i> <span>User Management</span></a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <div id="main-content">
+        <header>
+          <h2 id="page-title">Dashboard</h2>
+          <div class="user-profile">
+            <span id="user-name">Nama User</span>
+            <div id="user-avatar" class="avatar">U</div>
+            <button id="logout-btn" title="Logout">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="content-wrapper">
+          <section id="dashboard-section" class="page-section">
+            <div class="filter-bar">
+              <label for="start-date">Rentang Tanggal:</label>
+              <input
+                type="date"
+                id="start-date"
+                title="Tanggal Mulai Dashboard"
+              />
+              <span>s/d</span>
+              <input
+                type="date"
+                id="end-date"
+                title="Tanggal Akhir Dashboard"
+              />
+              <button
+                id="filter-btn"
+                class="btn-primary"
+                title="Terapkan Filter Dashboard"
+              >
+                <i class="fas fa-filter"></i> Terapkan
+              </button>
+            </div>
+            <div class="stat-cards">
+              <div class="card">
+                <h4></i>(Rp) Total Pendapatan</h4>
+                <p id="total-pendapatan">Rp 0</p>
+              </div>
+              <div class="card">
+                <h4><i class="fas fa-car"></i> Total Kendaraan</h4>
+                <p id="total-kendaraan">0</p>
+              </div>
+              <div class="card">
+                <h4><i class="fas fa-clock"></i> Rata-rata Durasi</h4>
+                <p id="avg-duration">0 Menit</p>
+              </div>
+            </div>
+            <div class="charts-grid">
+              <div class="chart-container">
+                <canvas id="pendapatanHarianChart"></canvas>
+              </div>
+              <div class="chart-container">
+                <canvas id="arusPerJamChart"></canvas>
+              </div>
+              <div class="chart-container">
+                <canvas id="distribusiKendaraanChart"></canvas>
+              </div>
+              <div class="chart-container">
+                <canvas id="pendapatanPerJenisChart"></canvas>
+              </div>
+            </div>
+          </section>
+
+          <section id="monitoring-section" class="page-section hidden">
+            <div class="cctv-feeds">
+              <div class="cctv-box">
+                <h4><i class="fas fa-arrow-down"></i> CCTV Pintu Masuk</h4>
+                <div id="entry-cctv-content" class="cctv-content">
+                  <div
+                    id="entry-result-image-container"
+                    class="result-image-container"
+                  >
+                    <div class="cctv-placeholder">
+                      <span>Menunggu unggahan</span>
+                    </div>
+                  </div>
+                  <div
+                    id="entry-loader"
+                    class="loader"
+                    style="display: none"
+                  ></div>
+                  <div id="entry-result-text" class="result-text"></div>
+                  <label for="entry-file-input" class="cctv-upload-button">
+                    <i class="fas fa-upload"></i> Unggah Gambar
+                  </label>
+                  <input
+                    type="file"
+                    id="entry-file-input"
+                    accept="image/*" 
+                    style="display: none"
+                  />
+                </div>
+              </div>
+
+              <div class="cctv-box">
+                <h4><i class="fas fa-arrow-up"></i> CCTV Pintu Keluar</h4>
+                <div id="exit-cctv-content" class="cctv-content">
+                  <div
+                    id="exit-result-image-container"
+                    class="result-image-container"
+                  >
+                    <div class="cctv-placeholder">
+                      <span>Menunggu unggahan</span>
+                    </div>
+                  </div>
+                  <div
+                    id="exit-loader"
+                    class="loader"
+                    style="display: none"
+                  ></div>
+                  <div id="exit-result-text" class="result-text"></div>
+                  <label for="exit-file-input" class="cctv-upload-button">
+                    <i class="fas fa-upload"></i> Unggah Gambar
+                  </label>
+                  <input
+                    type="file"
+                    id="exit-file-input"
+                    accept="image/*" 
+                    style="display: none"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="monitoring-header">
+              <h3>Kapasitas Parkir Real-time</h3>
+            </div>
+            <div id="kapasitas-container" class="stat-cards"></div>
+
+            <h3>5 Aktivitas Terkini (Kendaraan di Dalam)</h3>
+            <div class="recent-activity-table-wrapper">
+              <div class="table-container">
+                <table id="recent-activity-table">
+                  <thead>
+                    <tr>
+                      <th>Nomor Plat</th>
+                      <th>Jenis Kendaraan</th>
+                      <th>Tipe plat</th>
+                      <th>Tanggal Masuk</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="laporan-section" class="page-section hidden">
+            <div class="filter-bar">
+              <input
+                type="date"
+                id="laporan-start-date"
+                title="Tanggal Mulai Laporan"
+              />
+              <input
+                type="date"
+                id="laporan-end-date"
+                title="Tanggal Akhir Laporan"
+              />
+              <select
+                id="laporan-jenis-kendaraan"
+                title="Filter Jenis Kendaraan Laporan"
+              >
+                <option value="">Semua Jenis</option>
+                <option value="Mobil">Mobil</option>
+                <option value="Motor">Motor</option>
+              </select>
+              <select id="laporan-tipe-plat" title="Filter Tipe Plat Laporan">
+                <option value="">Semua Tipe Plat</option>
+                <option value="Sipil">Sipil</option>
+                <option value="Lemhannas">Lemhannas</option>
+                <option value="TNI AD">TNI AD</option>
+                <option value="TNI AL">TNI AL</option>
+                <option value="TNI AU">TNI AU</option>
+                <option value="Kemhan RI">Kemhan RI</option>
+                <option value="Mabes TNI">Mabes TNI</option>
+              </select>
+              <button
+                id="laporan-filter-btn"
+                class="btn-primary"
+                title="Cari Laporan"
+              >
+                <i class="fas fa-search"></i> Cari
+              </button>
+              <button
+                id="laporan-reset-btn"
+                class="btn-outline"
+                title="Reset Filter Laporan"
+              >
+                <i class="fas fa-undo"></i> Reset
+              </button>
+              <button
+                id="laporan-download-pdf-btn"
+                class="btn-danger"
+                title="Unduh Laporan sebagai PDF"
+              >
+                <i class="fas fa-file-pdf"></i> PDF
+              </button>
+              <button
+                id="laporan-download-csv-btn"
+                class="btn-success"
+                title="Unduh Laporan sebagai CSV"
+              >
+                <i class="fas fa-file-csv"></i> CSV
+              </button>
+            </div>
+            <div class="table-container">
+              <table id="laporan-table">
+                <thead>
+                  <tr>
+                    <th>No. Plat</th>
+                    <th>Jenis</th>
+                    <th>Tipe Plat</th>
+                    <th>Tgl Masuk</th>
+                    <th>Tgl Keluar</th>
+                    <th>Durasi (m)</th>
+                    <th>Biaya</th>
+                  </tr>
+                </thead>
+                <tbody id="laporan-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="manajemen-akses-section" class="page-section hidden">
+            <div class="page-header">
+              <h2>
+                <i class="fas fa-shield-alt"></i> Manajemen Akses Kendaraan
+              </h2>
+              <p>
+                Kelola daftar kendaraan yang di-blacklist (dilarang masuk) atau
+                di-whitelist (akses khusus/gratis).
+              </p>
+            </div>
+
+            <!-- Form untuk menambah data -->
+            <div class="card form-card-akses">
+              <h3>Tambah Kendaraan ke Daftar Akses</h3>
+              <form id="form-akses">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="akses-nomor-plat">Nomor Plat</label>
+                    <input
+                      type="text"
+                      id="akses-nomor-plat"
+                      placeholder="Contoh: B 1234 ABC"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="akses-status">Status</label>
+                    <select id="akses-status" required>
+                      <option value="WHITELIST">
+                        Whitelist (Akses Khusus)
+                      </option>
+                      <option value="BLACKLIST">
+                        Blacklist (Dilarang Masuk)
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-plus"></i> Tambah
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Layout untuk dua tabel -->
+            <div class="akses-tables-container">
+              <!-- Tabel Whitelist -->
+              <div class="table-wrapper">
+                <h3>
+                  <i
+                    class="fas fa-check-circle"
+                    style="color: var(--success-color)"
+                  ></i>
+                  Daftar Whitelist
+                </h3>
+                <div class="table-container">
+                  <table id="whitelist-table">
+                    <thead>
+                      <tr>
+                        <th>Nomor Plat</th>
+                        <th class="actions-cell">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="whitelist-table-body">
+                      <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tabel Blacklist -->
+              <div class="table-wrapper">
+                <h3>
+                  <i
+                    class="fas fa-times-circle"
+                    style="color: var(--error-color)"
+                  ></i>
+                  Daftar Blacklist
+                </h3>
+                <div class="table-container">
+                  <table id="blacklist-table">
+                    <thead>
+                      <tr>
+                        <th>Nomor Plat</th>
+                        <th class="actions-cell">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="blacklist-table-body">
+                      <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="pengaturan-sistem-section" class="page-section hidden">
+            <div class="page-header">
+              <h2><i class="fas fa-cogs"></i> Pengaturan Sistem</h2>
+              <p>Konfigurasi umum untuk operasional sistem parkir Anda.</p>
+            </div>
+
+            <div class="settings-layout">
+              <div class="settings-group">
+                <h3>
+                  <i class="fas fa-info-circle"></i> Informasi Umum Parkir
+                </h3>
+                <div class="setting-item">
+                  <label for="setting-nama-lokasi">Nama Lokasi Parkir:</label>
+                  <input
+                    type="text"
+                    id="setting-nama-lokasi"
+                    placeholder="Contoh: Parkir Sentosa Mall"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-alamat-lokasi">Alamat Lokasi:</label>
+                  <textarea
+                    id="setting-alamat-lokasi"
+                    rows="3"
+                    placeholder="Contoh: Jl. Merdeka No. 123, Kota Bahagia"
+                  ></textarea>
+                </div>
+                <div class="setting-item">
+                  <label for="setting-telepon-kontak">Telepon Kontak:</label>
+                  <input
+                    type="tel"
+                    id="setting-telepon-kontak"
+                    placeholder="Contoh: 021-1234567"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-email-kontak">Email Kontak:</label>
+                  <input
+                    type="email"
+                    id="setting-email-kontak"
+                    placeholder="Contoh: info@parkir.com"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-mata-uang">Simbol Mata Uang:</label>
+                  <input type="text" id="setting-mata-uang" value="Rp" />
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h3><i class="fas fa-car"></i> Pengaturan Tarif Mobil</h3>
+                <div class="setting-item">
+                  <label for="setting-tarif-pertama-mobil"
+                    >Tarif Jam Pertama (Rp):</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-tarif-pertama-mobil"
+                    min="0"
+                    placeholder="Contoh: 5000"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-tarif-perjam-mobil"
+                    >Tarif Jam Berikutnya (Rp):</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-tarif-perjam-mobil"
+                    min="0"
+                    placeholder="Contoh: 3000"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-tarif-maksimum-harian-mobil"
+                    >Tarif Maksimum Harian (Rp):</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-tarif-maksimum-harian-mobil"
+                    min="0"
+                    placeholder="Contoh: 25000"
+                  />
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h3>
+                  <i class="fas fa-motorcycle"></i> Pengaturan Tarif Motor
+                </h3>
+                <div class="setting-item">
+                  <label for="setting-tarif-pertama-motor"
+                    >Tarif Jam Pertama (Rp):</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-tarif-pertama-motor"
+                    min="0"
+                    placeholder="Contoh: 2000"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-tarif-perjam-motor"
+                    >Tarif Jam Berikutnya (Rp):</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-tarif-perjam-motor"
+                    min="0"
+                    placeholder="Contoh: 1000"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-tarif-maksimum-harian-motor"
+                    >Tarif Maksimum Harian (Rp):</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-tarif-maksimum-harian-motor"
+                    min="0"
+                    placeholder="Contoh: 10000"
+                  />
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h3>
+                  <i class="fas fa-business-time"></i> Pengaturan Operasional
+                </h3>
+                <div class="setting-item">
+                  <label for="setting-toleransi-masuk-menit"
+                    >Toleransi Masuk Gratis (Menit):</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-toleransi-masuk-menit"
+                    min="0"
+                    placeholder="Contoh: 5"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-kapasitas-maksimal-mobil"
+                    >Kapasitas Maksimal Mobil:</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-kapasitas-maksimal-mobil"
+                    min="0"
+                    placeholder="Contoh: 100"
+                  />
+                </div>
+                <div class="setting-item">
+                  <label for="setting-kapasitas-maksimal-motor"
+                    >Kapasitas Maksimal Motor:</label
+                  >
+                  <input
+                    type="number"
+                    id="setting-kapasitas-maksimal-motor"
+                    min="0"
+                    placeholder="Contoh: 200"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button id="simpan-pengaturan-btn" class="btn-primary btn-lg">
+                <i class="fas fa-save"></i> Simpan Semua Pengaturan
+              </button>
+            </div>
+          </section>
+
+          <section id="user-management-section" class="page-section hidden">
+            <div class="monitoring-header">
+              <h3>Manajemen Pengguna</h3>
+              <button id="btn-add-user" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Tambah User
+              </button>
+            </div>
+            <div class="table-container">
+              <table id="user-table">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th class="actions-cell">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="user-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-container" class="modal-container hidden">
+      <div class="modal-content">
+        <button class="modal-close-btn">&times;</button>
+        <h3 id="modal-title">Modal Title</h3>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+
+    <!-- PENTING: Library Eksternal -->
+    <!-- Socket.IO Client (Pastikan ini ada SEBELUM script.js Anda) -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <!-- Script Aplikasi Utama Anda -->
+    <script src="{{ url_for('static', path='script.js') }}"></script>
+  </body>
+</html>
