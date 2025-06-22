@@ -38,7 +38,7 @@ from ultralytics import YOLO
 from werkzeug.security import check_password_hash, generate_password_hash
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-GEMINI_API_KEY = "AIzaSyCFseDPq3YpbJhgaIoCluTuhk39IviORPw"
+GEMINI_API_KEY = ""
 MODEL_PATH = "./model"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 thread_pool = ThreadPoolExecutor(max_workers=8)
